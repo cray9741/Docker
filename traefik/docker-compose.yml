@@ -1,0 +1,21 @@
+version: '3'
+services:
+  reverse-proxy:
+    image: traefik:v2.11
+    command: --configFile=/etc/traefik/traefik.yml
+    ports:
+      - "80:80"
+      - "443:443"
+      - "8080:8080"
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - ./traefik.yml:/etc/traefik/traefik.yml
+      - ./acme.json:/acme.json
+    environment:
+      - CF_DNS_API_TOKEN=g1g0DiUyNr_W3zNzqQOshll9e_cvtY-YdOHv2bxE
+    networks:
+      - traefik
+
+networks:
+  traefik:
+    external: true
