@@ -1,7 +1,8 @@
-version: '3'
+version: '3.7'
 services:
   reverse-proxy:
     image: traefik:v2.11
+    entrypoint: ["/entrypoint.sh"]
     command: --configFile=/etc/traefik/traefik.yml
     ports:
       - "80:80"
@@ -11,10 +12,22 @@ services:
       - /var/run/docker.sock:/var/run/docker.sock
       - ./traefik.yml:/etc/traefik/traefik.yml
       - ./acme.json:/acme.json
+      - ./entrypoint.sh:/entrypoint.sh
+    secrets:
+      - CF_DNS_API_TOKEN
+      - ACME_EMAIL
     environment:
-      - CF_DNS_API_TOKEN=g1g0DiUyNr_W3zNzqQOshll9e_cvtY-YdOHv2bxE
+      - CF_DNS_API_TOKEN_FILE=/run/secrets/CF_DNS_API_TOKEN
+      - ACME_EMAIL_FILE=/run/secrets/ACME_EMAIL
+    restart: always
     networks:
       - traefik
+
+secrets:
+  CF_DNS_API_TOKEN:
+    external: true
+  ACME_EMAIL:
+    external: true
 
 networks:
   traefik:
